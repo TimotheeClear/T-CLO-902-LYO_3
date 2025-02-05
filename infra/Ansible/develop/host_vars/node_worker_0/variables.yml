@@ -1,0 +1,4 @@
+---
+ansible_port: 500
+ansible_ssh_private_key_file: "/home/michael/Documents/Epitech/CLO/T-CLO-902/T-CLO-902-LYO_3/Terraform/infra/node_worker_0_private_key.pem"
+# ansible_ssh_private_key_file: /home/runner/work/T-CLO-902-LYO_3/T-CLO-902-LYO_3/node_worker_0_private_key.pem

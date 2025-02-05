@@ -1,0 +1,91 @@
+# Default values for dex-k8s-authenticator.
+
+# Deploy environment label, e.g. dev, test, prod
+global:
+  deployEnv: dev
+
+replicaCount: 1
+
+image:
+  repository: mintel/dex-k8s-authenticator
+  tag: 1.4.0
+  pullPolicy: Always
+
+dexK8sAuthenticator:
+  port: 5555
+  debug: false
+  web_path_prefix: /
+  #logoUrl: http://<path-to-your-logo.png>
+  #kubectl_version: v1.16.2
+  #tlsCert: /path/to/dex-client.crt
+  #tlsKey: /path/to/dex-client.key
+  clusters:
+  - name: kubernetes
+    short_description: "My Cluster"
+    description: "Example Cluster Long Description..."
+    client_secret: pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok
+    issuer: https://dex.kubequest.net
+    k8s_master_uri: https://20.47.80.70:6443
+    client_id: kubernetes
+    redirect_uri: https://dexfront.kubequest.net/callback/
+
+service:
+  type: ClusterIP
+  port: 5555
+  # loadBalancerIP: 127.0.0.1
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/issuer: "dex-k8s-kubernetes-issuer"
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - dexfront.kubequest.net
+  tls:
+   - secretName: chart-example-tls
+     hosts:
+       - dexfront.kubequest.net
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+caCerts: 
+  enabled: false
+  secrets: {}
+  # Array of Self Signed Certificates
+  # cat CA.crt | base64 -w 0
+  #
+  #     name: The internal k8s name of the secret we create. It's also used in 
+  #     the volumeMount name. It must respect the k8s naming convension (avoid 
+  #     upper-case and '.' to be safe).
+  #
+  #     filename: The filename of the CA to be mounted. It must end in .crt for
+  #     update-ca-certificates to work
+  #
+  #     value: The base64 encoded value of the CA
+  #
+  #secrets:
+  #- name: ca-cert1
+  #  filename: ca1.crt
+  #  value: LS0tLS1......X2F
+  #- name: ca-cert2
+  #  filename: ca2.crt
+  #  value: DS1tFA1......X2F
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

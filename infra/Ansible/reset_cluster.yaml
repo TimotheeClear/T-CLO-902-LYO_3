@@ -1,0 +1,7 @@
+---
+- name: Remove the kubernetes Cluster
+  remote_user: root
+  hosts: all
+  roles:
+    - delete_cluster
+

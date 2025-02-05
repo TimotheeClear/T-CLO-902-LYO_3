@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sample-app-ingress
+  namespace: sample-app-kub-namespace
+  labels:
+    kubequest: sample-app 
+  annotations:
+    cert-manager.io/issuer: "cert-manager-issuer"
+    # acme.cert-manager.io/http01-edit-in-place: "true"
+    # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    kubernetes.io/tls-acme: "true"
+    # kubernetes.io/ingress.class: "nginx" 
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - app.sample-click.net
+    secretName: sample-app-tls
+  ingressClassName: nginx
+  rules:
+  - host: app.sample-click.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sample-app-service-clusterip-https
+            port:
+              number: 443

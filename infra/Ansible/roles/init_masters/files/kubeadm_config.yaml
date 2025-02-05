@@ -1,0 +1,45 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  name: master
+  criSocket: unix:///var/run/cri-dockerd.sock
+  imagePullPolicy: IfNotPresent
+  kubeletExtraArgs:
+    cloud-provider: external
+
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+kubernetesVersion: 1.30.0
+apiServer:
+  certSANs:
+    - 10.0.0.4
+    - 20.47.80.70
+  # extraArgs: 
+  #   oidc-issuer-url: https://dexadminkubequest.zapto.org
+  #   oidc-client-id: example-app
+  #   oidc-username-claim: email
+controllerManager:
+  extraArgs:
+    cloud-provider: external
+    bind-address: "0.0.0.0"
+networking:
+  podSubnet: 192.168.0.0/16
+scheduler:
+  extraArgs:
+    bind-address: "0.0.0.0"
+etcd:
+  local:
+    extraArgs:
+      listen-metrics-urls: http://0.0.0.0:2381
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+clusterCIDR: 192.168.0.0/16
+mode: "iptables"
+portRange: "30000-32767"
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+serverTLSBootstrap: true
+containerRuntimeEndpoint: unix:///var/run/cri-dockerd.sock

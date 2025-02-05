@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  app_debug: "{{ .Values.configmap.appDebug }}"
+  app_env: {{ .Values.configmap.appEnv }}

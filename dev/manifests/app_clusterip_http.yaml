@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-app-service-clusterip-http
+  namespace: sample-app-kub-namespace
+spec:
+  type: ClusterIP
+  selector:
+    app: sample-app
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: 80
+    targetPort: 80
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-app-service-clusterip-https
+  namespace: sample-app-kub-namespace
+spec:
+  type: ClusterIP
+  selector:
+    app: sample-app
+  ports:
+  - name: https-port
+    protocol: TCP
+    port: 443
+    targetPort: 80

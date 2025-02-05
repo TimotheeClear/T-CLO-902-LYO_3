@@ -1,0 +1,5 @@
+{
+    "cloud-provider-azure": "latest",
+    "calico": "v3.27.3",
+    "ingress-nginx": "1.2.2"
+}

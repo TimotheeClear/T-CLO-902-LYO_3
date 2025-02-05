@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.selector }}
+  ports:
+  - name: http
+    port: {{ .Values.service.port }}
+    protocol: TCP
+    targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.secureService.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.selector }}
+  ports:
+  - name: https
+    port: {{ .Values.secureService.port }}
+    protocol: TCP
+    targetPort: http

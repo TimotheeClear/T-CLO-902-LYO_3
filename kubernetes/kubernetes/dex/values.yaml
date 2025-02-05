@@ -1,0 +1,247 @@
+# Default values for dex.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Number of replicas (pods) to launch.
+replicaCount: 1
+
+# -- Labels to apply to all resources and selectors.
+commonLabels:
+  team_name: test
+
+image:
+  # -- Name of the image repository to pull the container image from.
+  repository: ghcr.io/dexidp/dex
+
+  # -- [Image pull policy](https://kubernetes.io/docs/concepts/containers/images/#updating-images) for updating already existing images on a node.
+  pullPolicy: IfNotPresent
+
+  # -- Image tag override for the default value (chart appVersion).
+  tag: "v2.40.0"
+
+https:
+  # -- Enable the HTTPS endpoint.
+  enabled: false
+
+grpc:
+  # -- Enable the gRPC endpoint.
+  # Read more in the [documentation](https://dexidp.io/docs/api/).
+  enabled: false
+
+configSecret:
+  # -- Enable creating a secret from the values passed to `config`.
+  # If set to false, name must point to an existing secret.
+  create: true
+
+  # -- The name of the secret to mount as configuration in the pod.
+  # If not set and create is true, a name is generated using the fullname template.
+  # Must point to secret that contains at least a `config.yaml` key.
+  name: "dex-secretes"
+
+# -- Application configuration.
+# See the [official documentation](https://dexidp.io/docs/).
+config:
+  issuer: https://dex.kubequest.net
+
+  # storage:
+  #   type: kubernetes
+  #   config:
+  #     inCluster: true
+
+  # storage:
+  #   type: mysql
+  #   config:
+  #     host: mysql-service.mysql-namespace.svc.cluster.local
+  #     port: 3306
+  #     tls: false
+  #     user: app_user
+  #     password: app_password
+  #     database: dex_db
+
+  storage:
+    type: sqlite3
+    config:
+      file: /var/dex/dex.db
+
+  web:
+    http: 0.0.0.0:5556
+
+    # If enabled, be sure to configure tls settings above, or use a tool
+    # such as let-encrypt to manage the certs.
+    # Currently this chart does not support both http and https, and the port
+    # is fixed to 5556
+    #
+    # https: 0.0.0.0:5556
+    # tlsCert: /etc/dex/tls/tls.crt
+    # tlsKey: /etc/dex/tls/tls.key
+
+  frontend:
+    theme: "coreos"
+    issuer: "Example Co"
+    issuerUrl: "https://example.com"
+    logoUrl: https://example.com/images/logo-250x25.png
+
+  expiry:
+    signingKeys: "6h"
+    idTokens: "24h"
+  
+  logger:
+    level: debug
+    format: json
+
+  oauth2:
+    responseTypes: ["code", "token", "id_token"]
+    skipApprovalScreen: true
+
+  # Remember you can have multiple connectors of the same 'type' (with different 'id's)
+  # If you need e.g. logins with groups for two different Microsoft 'tenants'
+  connectors:
+
+  # GitHub configure 'OAuth Apps' -> 'New OAuth App', add callback URL
+  # https://github.com/settings/developers
+  - type: github
+    id: github
+    name: GitHub
+    config:
+      clientID: Ov23liqcEOvMrhZcBlwR
+      clientSecret: 7e3585be19cfe7356992a2af69605e5b8b55d7c4
+      redirectURI: https://dex.kubequest.net/callback
+      # 'orgs' can be used to map groups from Github
+      # https://github.com/coreos/dex/blob/master/Documentation/connectors/github.md
+      orgs:
+      - name: kubequestlyo3
+        teams:
+        - admins
+        - dev
+
+  # The 'name' must match the k8s API server's 'oidc-client-id'
+  staticClients:
+  - id: kubernetes
+    name: "kubernetes"
+    secret: "pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok"
+    redirectURIs:
+    - https://dexfront.kubequest.net/callback/
+  
+  enablePasswordDB: True
+  staticPasswords:
+  - email: "admin@example.com"
+    # bcrypt hash of the string "password"
+    hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+    username: "admin"
+    userID: "08a8684b-db88-4b73-90a9-3cd1661f5466" 
+
+# -- Similar to env but with support for all possible configurations.
+# See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#environment-variables) for details.
+envVars:
+  - name: GITHUB_CLIENT_ID
+    value: Ov23liqcEOvMrhZcBlwR
+    # valueFrom:
+    #   secretKeyRef:
+    #     name: dex-secret
+    #     key: GITHUB_CLIENT_ID
+  - name: GITHUB_CLIENT_SECRET
+    value: 7e3585be19cfe7356992a2af69605e5b8b55d7c4
+    # valueFrom:
+    #     secretKeyRef:
+    #       name: dex-secret
+    #       key: GITHUB_CLIENT_SECRET
+
+rbac:
+  # -- Specifies whether RBAC resources should be created.
+  # If disabled, the operator is responsible for creating the necessary resources based on the templates.
+  create: true
+
+  # -- Specifies which RBAC resources should be created.
+  # If disabled, the operator is responsible for creating the necessary resources (ClusterRole and RoleBinding or CRD's)
+  createClusterScoped: true
+
+# -- Labels to be added to deployment.
+deploymentLabels: 
+  kubequest: test-deploy
+
+# -- Labels to be added to pods.
+podLabels:
+  kubequest: test-pod
+
+podDisruptionBudget:
+  # -- Enable a [pod distruption budget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) to help dealing with [disruptions](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/).
+  # It is **highly recommended** for webhooks as disruptions can prevent launching new pods.
+  enabled: false
+
+  # -- (int/percentage) Number or percentage of pods that must remain available.
+  minAvailable: 2
+
+  # -- (int/percentage) Number or percentage of pods that can be unavailable.
+  maxUnavailable: 3
+
+service:
+  # -- Kubernetes [service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
+  type: ClusterIP
+
+  ports:
+    http:
+      # -- HTTP service port
+      port: 5556
+
+    https:
+      # -- HTTPS service port
+      port: 5554
+
+ingress:
+  # -- Enable [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+  enabled: true
+
+  # -- Ingress [class name](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class).
+  className: "nginx"
+
+  # -- Annotations to be added to the ingress.
+  annotations: # {}
+    cert-manager.io/issuer: "dex-issuer"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/tls-acme: "true"
+
+  # -- Ingress host configuration.
+  # @default -- See [values.yaml](values.yaml).
+  hosts:
+    - host: dex.kubequest.net
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+  # -- Ingress TLS configuration.
+  # @default -- See [values.yaml](values.yaml).
+  tls: #[]
+   - secretName: dex-dns-tls
+     hosts:
+       - dex.kubequest.net
+
+# -- Container resource [requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+# See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources) for details.
+# @default -- No requests or limits.
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# -- Autoscaling configuration (see [values.yaml](values.yaml) for details).
+# @default -- Disabled by default.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Deployment [strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) configuration.
+strategy:
+  rollingUpdate:
+    maxUnavailable: 1
+  type: RollingUpdate

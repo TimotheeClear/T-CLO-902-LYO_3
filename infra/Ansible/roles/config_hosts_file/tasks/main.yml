@@ -1,0 +1,11 @@
+# tasks file for roles/config_hosts_file
+- name: Ajouter des entrées dans /etc/hosts
+  become: true
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ item.private_ip }} {{ item.hostname }} {{ item.first_domain }} {{ item.second_domain }}"
+    state: present
+  loop:
+  - {private_ip: 10.0.0.4, hostname: master, first_domain: "", second_domain: ""}
+  - {private_ip: 10.10.0.4, hostname: vmNodeWorker-0, first_domain: cliquez-kubequest.zapto.org, second_domain: viz.zapto.org}
+  - {private_ip: 10.10.0.5, hostname: vmNodeWorker-1, first_domain: cliquez-kubequest.zapto.org, second_domain: viz.zapto.org,}

@@ -1,0 +1,34 @@
+apiVersion: v1
+entries:
+  sample-app:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-06-21T18:54:47.584897476+02:00"
+    description: A Helm chart for Kubernetes projet of Epitech's project
+    digest: fc4279148451ca7e4be8d23b58d8fbe70283c83ea0c2e51e2cfb1618f9886f21
+    name: sample-app
+    type: application
+    urls:
+    - https://michaelRanivoEpitech.github.io/sample-app-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-06-21T18:54:47.584222368+02:00"
+    description: A Helm chart for Kubernetes
+    digest: b8004a68be0d231dc28cb73253c7fcde16634ac3b913d8bac252c3ffb0787f3f
+    name: sample-app
+    type: application
+    urls:
+    - https://michaelRanivoEpitech.github.io/sample-app-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-06-21T18:54:47.583751693+02:00"
+    description: A Helm chart for Kubernetes
+    digest: b890bc6788f02f30bc1710e8a523d0c9e7bf84b9ac44a0c384a6e38ab4425355
+    name: sample-app
+    type: application
+    urls:
+    - https://michaelRanivoEpitech.github.io/sample-app-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-06-21T18:54:47.583226969+02:00"

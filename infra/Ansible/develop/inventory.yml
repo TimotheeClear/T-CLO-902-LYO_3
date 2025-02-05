@@ -1,0 +1,13 @@
+all:
+  children:
+    controller:
+      children:
+        master:
+          hosts:
+            node_master:
+    servers:
+      children:
+        worker:
+          hosts:
+            node_worker_0:
+            node_worker_1:

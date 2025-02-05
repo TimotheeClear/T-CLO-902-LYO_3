@@ -1,0 +1,87 @@
+# Default values for sample-app-charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespce: ""
+
+selector: ""
+
+labels: ""
+
+replicaCount: 1
+
+configmap:
+  name: "" 
+  app_debug: "" 
+  app_env: ""
+
+secret:
+  name: ""
+  # The value of those variables have to be encrypted on base64
+  app_key: ""
+  db_connection: ""
+  db_host: ""
+  db_port: ""
+  db_database: ""
+  db_username: ""
+  db_password: ""
+
+image:
+  name: sample-app
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+service:
+  name: ""
+  port: 80
+
+secureService:
+  name: ""
+  port: 443
+
+issuer:
+  name: ""
+  mail: ""
+
+ingress:
+  enabled: true
+  name: ""
+  className: ""
+  annotations: {}
+    # cert-manager.io/issuer: "cert-manager-issuer"
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: ""
+  pathType: Prefix
+  secretName: ""
+  hosts: ""
+
+deployement:
+  name: ""
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  requestsMemory: ""
+  requestsCpu: ""
+  limitsMemory: ""
+  limitsCpu: ""
+
+podRestartPloicy: Always
+
+autoscaling:
+  enabled: true
+  name: ""
+  # minReplicas: 2
+  # maxReplicas: 50
+  # targetCPUUtilizationPercentage: 75
+  # targetMemoryUtilizationPercentage: 80
+
+strategy:
+  # maxUnavailable: 25%
+  # maxSurge: 25%

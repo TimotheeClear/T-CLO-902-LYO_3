@@ -1,0 +1,18 @@
+- name: Initiate Dependencies
+  remote_user: root
+  hosts: master
+  roles:
+    - init_masters
+  vars:
+    azure_tenant_id: "{{ azure_tenant_id }}"
+    azure_subscription: "{{ azure_subscription }}"
+    azure_client_it: "{{ azure_client_it }}"
+    azure_client_secrete: "{{ azure_client_secrete }}"
+    azure_project_rs: "{{ azure_project_rs }}"
+    azure_project_sg: "{{ azure_project_sg }}"
+    azure_project_location: "{{ azure_project_location }}"
+    azure_project_vmtype: "{{ azure_project_vmtype }}"
+    azure_project_vnetname: "{{ azure_project_vnetname }}"
+    azure_project_subnetname: "{{ azure_project_subnetname }}"
+    azure_project_route_table: "{{ azure_project_route_table }}"
+    azure_project_lb_sku: "{{ azure_project_lb_sku }}"

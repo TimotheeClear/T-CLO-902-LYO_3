@@ -1,0 +1,18 @@
+# tasks file for roles/delete_cluster
+--- 
+- name: Delete Kubernetes Cluster
+  become: true
+  shell: |
+    kubeadm reset --force --cri-socket=unix:///var/run/cri-dockerd.sock
+
+- name: Delete .kube directory
+  become: true
+  ansible.builtin.file:
+    state: absent
+    path: /home/{{ ansible_user }}/.kube/
+
+- name: Delete cni directory
+  become: true
+  ansible.builtin.file:
+    state: absent
+    path: /etc/cni/net.d

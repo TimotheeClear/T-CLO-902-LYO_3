@@ -1,0 +1,12 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sLimitResources
+metadata:
+  name: pod-must-have-cpu-memory-limits
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Deployment","Pod"]
+  parameters:
+    cpu: "500m"      # Limite de CPU à 500 millicores
+    memory: "256Mi"  # Limite de mémoire à 256 MiB

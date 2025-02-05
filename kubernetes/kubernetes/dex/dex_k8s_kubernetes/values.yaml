@@ -1,0 +1,96 @@
+# Default values for dex-k8s-authenticator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Number of replicas (pods) to launch.
+replicaCount: 1
+
+image:
+  # -- Name of the image repository to pull the container image from.
+  repository: mintel/dex-k8s-authenticator
+
+  # -- [Image pull policy](https://kubernetes.io/docs/concepts/containers/images/#updating-images) for updating already existing images on a node.
+  pullPolicy: IfNotPresent
+
+  # -- Image tag override for the default value (chart appVersion).
+  tag: "v1.4.0"
+
+# -- A name to substitute for the full names of resources.
+fullnameOverride: "dex-front"
+
+clusters:
+  - name: kubernetes
+    short_description: "Example Cluster"
+    description: "Example Cluster Long Description..."
+    redirect_uri: https://dex.kubequest.net/callback/kubernetes
+    client_secret: pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok
+    client_id: kubernetes
+    issuer:  https://dex.kubequest.net:5556
+    k8s_master_uri: https://20.47.80.70:6443
+    scopes:
+      - email
+      - profile
+      - openid
+
+# A path-prefix from which to serve requests and assets
+web_path_prefix: /
+
+service:
+  # -- Kubernetes [service type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
+  type: ClusterIP
+
+  # -- Service port.
+  port: 80
+
+ingress:
+  # -- Enable [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+  enabled: false
+
+  # -- Ingress [class name](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class).
+  className: "nginx"
+
+  # -- Annotations to be added to the ingress.
+  annotations:
+    cert-manager.io/issuer: "dex-k8s-kubernetes-issuer"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/tls-acme: "true"
+
+  # -- Ingress host configuration.
+  # @default -- See [values.yaml](values.yaml).
+  hosts:
+    - host: dexfront.kubequest.net
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+  # -- Ingress TLS configuration.
+  # @default -- See [values.yaml](values.yaml).
+  tls: #[]
+   - secretName: dex-front-tls
+     hosts:
+       - dexfront.kubequest.net
+
+# -- Container resource [requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+# See the [API reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#resources) for details.
+# @default -- No requests or limits.
+resources: #{}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# -- Autoscaling configuration (see [values.yaml](values.yaml) for details).
+# @default -- Disabled by default.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

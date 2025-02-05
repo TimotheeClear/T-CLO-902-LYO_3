@@ -1,0 +1,6 @@
+- name: Initiate Dependencies
+  remote_user: root
+  hosts: worker
+  roles:
+    - worker_join
+  

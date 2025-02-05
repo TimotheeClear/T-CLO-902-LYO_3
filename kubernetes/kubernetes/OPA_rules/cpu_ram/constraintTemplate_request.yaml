@@ -1,0 +1,62 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequiredrequests
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequiredRequests
+      validation:
+        # Schema for the `parameters` field
+        openAPIV3Schema:
+          properties:
+            cpu:
+              type: string
+            memory:
+              type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequiredrequests
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.containers[_]
+          requests := container.resources.requests
+
+          # Check CPU request
+          cpu_request := requests.cpu
+          not allowed_cpu(cpu_request)
+
+          # Check Memory request
+          memory_request := requests.memory
+          not allowed_memory(memory_request)
+
+          msg := sprintf("CPU or Memory requests exceed the allowed values: cpu=%v, memory=%v", [cpu_request, memory_request])
+        }
+
+        allowed_cpu(cpu) {
+          input.parameters.cpu == ""
+        } {
+          parse_quantity(cpu) <= parse_quantity(input.parameters.cpu)
+        }
+
+        allowed_memory(memory) {
+          input.parameters.memory == ""
+        } {
+          parse_quantity(memory) <= parse_quantity(input.parameters.memory)
+        }
+
+        parse_quantity(quantity) = value {
+          re_match("^[0-9]+m$", quantity)
+          value := to_number(substring(quantity, 0, count(quantity)-1)) / 1000.0
+        } {
+          re_match("^[0-9]+$", quantity)
+          value := to_number(quantity)
+        } {
+          re_match("^[0-9]+Mi$", quantity)
+          value := to_number(substring(quantity, 0, count(quantity)-2))
+        } {
+          re_match("^[0-9]+Gi$", quantity)
+          value := to_number(substring(quantity, 0, count(quantity)-2)) * 1024.0
+        }

@@ -1,0 +1,13 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: all-must-have-label-gk
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["*"]
+      - apiGroups: ["apps", "extensions", "batch", "networking.k8s.io", "rbac.authorization.k8s.io", "policy", "autoscaling"]
+        kinds: ["*"]
+  parameters:
+    labels: ["kubequest"]

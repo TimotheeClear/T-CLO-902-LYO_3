@@ -1,0 +1,7 @@
+- name: Install Dependencies
+  remote_user: root
+  hosts: all
+  roles:
+    - config_hosts_file
+    - install_dep
+   

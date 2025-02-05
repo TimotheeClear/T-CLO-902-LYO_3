@@ -1,0 +1,12 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredRequests
+metadata:
+  name: pod-must-have-cpu-memory-requests
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Deployment","Pod"]
+  parameters:
+    cpu: "100m"      # Request de CPU à 100 millicores
+    memory: "128Mi"  # Request de mémoire à 128 MiB

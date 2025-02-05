@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployement.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    kubequest: {{ .Values.labels }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.labels }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.labels }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "michaelepitech/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        ports:
+        - name: http
+          protocol: TCP
+          containerPort: {{ .Values.service.port }}
+        env:
+        - name: APP_DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.configmap.name }}
+              key: app_debug
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.configmap.name }}
+              key: app_env
+        - name: APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: laravel-app-key
+        - name: DB_CONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: db-connection
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: db-host
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: db-port
+        - name: DB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: db-database
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: db-username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: db-password
+        resources:
+          requests:
+            memory: {{ .Values.resources.requestsMemory }}
+            cpu: {{ .Values.resources.requestsCpu }}
+          limits:
+            memory: {{ .Values.resources.limitsMemory }}
+            cpu: {{ .Values.resources.limitsCpu }}
+      restartPolicy: {{ .Values.podRestartPloicy }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.strategy.maxUnavailable }}
+      maxSurge: {{ .Values.strategy.maxSurge }}

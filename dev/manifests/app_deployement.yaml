@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app-deployment
+  namespace: sample-app-kub-namespace
+  labels:
+    kubequest: sample-app
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: sample-app
+  template:
+    metadata:
+      labels:
+        app: sample-app
+    spec:
+      # imagePullSecrets:
+      # - name: sample-app-secret-cr
+      containers:
+      - name: sample-app-container
+        imagePullPolicy: Always
+        image: nginx:latest
+        # image: sampleappcrteakr.azurecr.io/sample-app:latest
+        # command: ["php"]
+        # args: ["artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+        ports:
+        - containerPort: 80
+          # name: sample-app-port
+        # env:
+        # - name: APP_DEBUG
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: sample-app-configmap
+        #       key: app_debug
+        # - name: APP_ENV
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: sample-app-configmap
+        #       key: app_env
+        # - name: APP_KEY
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: laravel-app-key
+        # - name: MYSQL_ATTR_SSL_CA
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: mysql-ssl-ca
+        # - name: DB_HOST
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: db-host
+        # - name: DB_CONNECTION
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: db-connection
+        # - name: DB_PORT
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: db-port
+        # - name: DB_DATABASE
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: db-database
+        # - name: DB_USERNAME
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: db-username
+        # - name: DB_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: sample-app-secret
+        #       key: db-password
+        # volumeMounts:
+        #   - name: secret-volume
+        #     mountPath: /etc/ssl/certs
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      restartPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
